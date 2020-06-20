@@ -7,7 +7,6 @@
 # @File     : Encoder.py
 # @Project  : PaperProject
 import tensorflow as tf
-import keras as keras
 from tensorflow import keras
 from MultiHeadAttention import MultiHeadAttention
 from utils import feed_forward_network
