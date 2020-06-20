@@ -10,6 +10,8 @@ import tensorflow as tf
 import numpy as np
 from tensorflow import keras
 
+max_length = 40
+
 
 def create_padding_mask(batch_data):
     padding_mask = tf.cast(tf.math.equal(batch_data, 0), tf.float32)
@@ -68,6 +70,29 @@ def feed_forward_network(d_model, dff):
         keras.layers.Dense(dff, activation='relu'),
         keras.layers.Dense(d_model)
     ])
+
+
+def get_angles(pos, i, d_model):
+    angle_rates = 1 / np.power(10000,
+                               (2 * (i // 2)) / np.float32(d_model))
+    return pos * angle_rates
+
+
+def get_position_embedding(sentence_length, d_model):
+    angle_rads = get_angles(np.arange(sentence_length)[:, np.newaxis],
+                            np.arange(d_model)[np.newaxis, :],
+                            d_model)
+    # sines.shape: [sentence_length, d_model / 2]
+    # cosines.shape: [sentence_length, d_model / 2]
+    sines = np.sin(angle_rads[:, 0::2])
+    cosines = np.cos(angle_rads[:, 1::2])
+
+    # position_embedding.shape: [sentence_length, d_model]
+    position_embedding = np.concatenate([sines, cosines], axis=-1)
+    # position_embedding.shape: [1, sentence_length, d_model]
+    position_embedding = position_embedding[np.newaxis, ...]
+
+    return tf.cast(position_embedding, dtype=tf.float32)
 
 
 if __name__ == '__main__':
