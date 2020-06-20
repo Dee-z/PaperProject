@@ -27,7 +27,7 @@ class MultiHeadAttention(keras.layers.Layer):
 
     def split_heads(self, x, batch_size):
         x = tf.reshape(x, (batch_size, -1, self.num_heads, self.depth))
-        return x.transpose(x, perm=[0, 2, 1, 3])  # large split seq_len
+        return tf.transpose(x, perm=[0, 2, 1, 3])  # large split seq_len
 
     def call(self, q, k, v, mask):
         batch_size = tf.shape(q)[0]
@@ -54,5 +54,5 @@ if __name__ == '__main__':
     temp_mha = MultiHeadAttention(d_model=512, num_heads=8)
     y = tf.random.uniform((1, 60, 256))  # (batch_size, seq_len_q, dim)
     output, attn = temp_mha(y, y, y, mask=None)
-    # print(output.shape)
-    # print(attn.shape)
+    print(output.shape)
+    print(attn.shape)

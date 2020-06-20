@@ -8,6 +8,7 @@
 # @Project  : PaperProject
 import tensorflow as tf
 import numpy as np
+from tensorflow import keras
 
 
 def create_padding_mask(batch_data):
@@ -62,33 +63,43 @@ def create_look_ahead_mask(size):
     return mask  # (seq_len, seq_len)
 
 
+def feed_forward_network(d_model, dff):
+    return keras.Sequential([
+        keras.layers.Dense(dff, activation='relu'),
+        keras.layers.Dense(d_model)
+    ])
+
+
 if __name__ == '__main__':
-    x = tf.constant([[7, 6, 0, 0, 1], [1, 2, 3, 0, 0], [0, 0, 0, 4, 5]])
-    create_padding_mask(x)
+    # x = tf.constant([[7, 6, 0, 0, 1], [1, 2, 3, 0, 0], [0, 0, 0, 4, 5]])
+    # create_padding_mask(x)
+    #
+    # create_look_ahead_mask(3)
+    #
+    # temp_k = tf.constant([[10, 0, 0],
+    #                       [0, 10, 0],
+    #                       [0, 0, 10],
+    #                       [0, 0, 10]], dtype=tf.float32)  # (4, 3)
+    #
+    # temp_v = tf.constant([[1, 0],
+    #                       [10, 0],
+    #                       [100, 5],
+    #                       [1000, 6]], dtype=tf.float32)  # (4, 2)
+    #
+    # temp_q1 = tf.constant([[0, 10, 0]], dtype=tf.float32)  # (1, 3)
+    # np.set_printoptions(suppress=True)
+    # print_scaled_dot_product_attention(temp_q1, temp_k, temp_v)
+    #
+    # temp_q2 = tf.constant([[0, 0, 10]], dtype=tf.float32)  # (1, 3)
+    # print_scaled_dot_product_attention(temp_q2, temp_k, temp_v)
+    #
+    # temp_q3 = tf.constant([[10, 10, 0]], dtype=tf.float32)  # (1, 3)
+    # print_scaled_dot_product_attention(temp_q3, temp_k, temp_v)
+    #
+    # temp_q4 = tf.constant([[0, 10, 0],
+    #                        [0, 0, 10],
+    #                        [10, 10, 0]], dtype=tf.float32)  # (3, 3)
+    # print_scaled_dot_product_attention(temp_q4, temp_k, temp_v)
 
-    create_look_ahead_mask(3)
-
-    temp_k = tf.constant([[10, 0, 0],
-                          [0, 10, 0],
-                          [0, 0, 10],
-                          [0, 0, 10]], dtype=tf.float32)  # (4, 3)
-
-    temp_v = tf.constant([[1, 0],
-                          [10, 0],
-                          [100, 5],
-                          [1000, 6]], dtype=tf.float32)  # (4, 2)
-
-    temp_q1 = tf.constant([[0, 10, 0]], dtype=tf.float32)  # (1, 3)
-    np.set_printoptions(suppress=True)
-    print_scaled_dot_product_attention(temp_q1, temp_k, temp_v)
-
-    temp_q2 = tf.constant([[0, 0, 10]], dtype=tf.float32)  # (1, 3)
-    print_scaled_dot_product_attention(temp_q2, temp_k, temp_v)
-
-    temp_q3 = tf.constant([[10, 10, 0]], dtype=tf.float32)  # (1, 3)
-    print_scaled_dot_product_attention(temp_q3, temp_k, temp_v)
-
-    temp_q4 = tf.constant([[0, 10, 0],
-                           [0, 0, 10],
-                           [10, 10, 0]], dtype=tf.float32)  # (3, 3)
-    print_scaled_dot_product_attention(temp_q4, temp_k, temp_v)
+    sample_ffn = feed_forward_network(512, 2048)
+    sample_ffn(tf.random.uniform((64, 50, 512)))
